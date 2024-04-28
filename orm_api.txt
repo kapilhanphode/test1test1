@@ -1,0 +1,63 @@
+Odoo ORM Methods:
+
+1. Search: Search record is used to search on master on specific criteria/condition/domain
+for e.g
+->a = models.execute_kw(db, uid, password, 'res.partner', 'search', [[('is_company', '=', True)]])
+returns "ids" of the records. [1,2,3,4,....]
+
+2. Create: Create orm method is use to create data in masters, it takes data in key/field, values format.
+for e.g lets try to create a record in res.partner with name='test1'.
+->b = models.execute_kw(db, uid, password, 'res.partner', 'create', [{'name':'test1'}])
+returns "id" of new created record
+
+3. Write: This method is used to update the existing record in the database
+->c = models.execute_kw(db, uid, password, 'res.partner', 'write', [[41], {'name': "Duplicate of id 41"}])
+returns "True" if runs successfully
+
+4. Name get: This method gets the name of the field 
+-> d = models.execute_kw(db, uid, password, 'res.partner', 'name_get', [[26]])
+returns id and name of the record in list format. [[27, 'Nicole Ford']]
+
+5. Unlink: This methos is used to delete the record from the database, we have to pass id of the record.
+-> e = models.execute_kw(db, uid, password, 'res.partner', 'unlink', [[]])
+returns "True" if record is deleted
+
+6. Copy: Copy method creates exact duplicate record of current.
+for e.g res.copy({'name': 'Duplicate'})
+
+7. Browse: This method is use to get the data from the master's based on thier ids.
+->self.env['res.partner'].browse(id)
+
+8. Search Count: This method is use to get the count of record which matched the criteria
+-> self.env['res.partner'].search_count([('name','=','test1')])
+
+ORM Method with API;
+
+url = 'http://localhost:8080/'
+db = 'test_280424'
+username = 'admin'
+password = 'admin'
+
+import xmlrpc.client
+# info = xmlrpc.client.ServerProxy('https://demo.odoo.com/start').start()
+# url, db, username, password = info['host'], info['database'], info['user'], info['password']
+common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+print(common)
+uid = common.authenticate(db, username, password, {})
+models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+models.execute_kw(db, uid, password, 'res.partner', 'check_access_rights', ['read'], {'raise_exception': False})
+print(models)
+
+a = models.execute_kw(db, uid, password, 'res.partner', 'search', [[('is_company', '=', True)]])
+print(a)
+b = models.execute_kw(db, uid, password, 'res.partner', 'create', [{'name':'test1'}])
+print(b)
+c = models.execute_kw(db, uid, password, 'res.partner', 'write', [[41], {'name': "Duplicate of id 41"}])
+print(c)
+d = models.execute_kw(db, uid, password, 'res.partner', 'name_get', [[27]])
+print(d)
+e = models.execute_kw(db, uid, password, 'res.partner', 'unlink', [[27]])
+print(e)
+f = models.execute_kw(db, uid, password, 'res.partner', 'browse', (33))
+print(f)
+
